@@ -94,13 +94,13 @@ define luaprint
 		end
 		# string
 		if $type == 4
-			set $ts = &($val->gc->ts)
+			set $ts = (TString *) $val->gc
 			set $str = (char *)($ts + 1)
 			printf "'%s'", $str
 		end
 		# table
 		if $type == 5
-			set $tab = &($val->gc->h)
+			set $tab = (Table *) $val->gc
 			printf "<tab> %p ", $tab
 			if $argc == 2
 				luaprinttable $tab
@@ -112,8 +112,9 @@ define luaprint
 		end
 		# userdata
 		if $type == 7
-			set $uv = $val->gc.u->uv
-			printf "<udata> %p size=%d", &($val->gc.u) + 1, $uv.len
+			set $u = (Udata *) $val->gc
+			set $uv = $u->uv
+			printf "<udata> %p size=%d", $u + 1, $uv.len
 			if $argc == 2 && $uv.metatable
 				printf " metatable="
 				luaprinttable $uv.metatable
